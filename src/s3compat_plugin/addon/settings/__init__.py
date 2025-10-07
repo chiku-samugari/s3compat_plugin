@@ -1,0 +1,1 @@
+from s3compat_plugin.addon.settings.defaults import *  # noqa

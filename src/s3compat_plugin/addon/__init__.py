@@ -1,0 +1,1 @@
+default_app_config = 's3compat_plugin.addon.apps.S3CompatAddonAppConfig'
