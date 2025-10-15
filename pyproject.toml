@@ -46,6 +46,9 @@ django = ">=4.2"
 boto3 = ">=1.28.0"
 botocore = ">=1.31.0"
 
+[tool.poetry.plugins."waterbutler.providers"]
+s3compat = "s3compat_plugin.provider.provider:S3CompatProvider"
+
 [tool.poetry.group.dev.dependencies]
 pytest = ">=7.0.0"
 pytest-django = ">=4.5.0"
