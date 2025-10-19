@@ -25,6 +25,21 @@ class S3CompatAddonAppConfig(BaseAddonAppConfig):
     node_settings_template = os.path.join(TEMPLATE_PATH, 's3compat_node_settings.mako')
     user_settings_template = os.path.join(TEMPLATE_PATH, 's3compat_user_settings.mako')
 
+    def ready(self):
+        super().ready()
+
+        # Import here to avoid AppRegistryNotReady errors
+        from .models import S3CompatFileNode, S3CompatFile, S3CompatFolder
+        from .typedmodel_workaround import register_all_models
+
+        # Register the file/folder models in the TypedModel registry.
+        # We explicitly define our models to be proxy which make the
+        # classes unmanaged by TypedModel, and explicit `app_label` to
+        # keep migrations in our addon (not in osf.io). By this
+        # registration, the classes are put under control of TypedModel
+        # again.
+        register_all_models(S3CompatFileNode, S3CompatFile, S3CompatFolder)
+
     @property
     def get_hgrid_data(self):
         return s3compat_root_folder
