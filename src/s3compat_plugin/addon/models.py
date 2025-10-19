@@ -13,17 +13,43 @@ from .utils import (bucket_exists,
                     get_bucket_location_or_error,
                     get_bucket_names,
                     find_service_by_host)
+from .typedmodel_workaround import TypedModelRejoinMixin
 
-class S3CompatFileNode(BaseFileNode):
+
+class S3CompatFileNode(TypedModelRejoinMixin, BaseFileNode):
+    """
+    Base file node for S3-compatible storage.
+
+    This is defined as a proxy model with explicit app_label to ensure
+    migrations are generated in this addon's migrations directory, not
+    in osf.io.  However, TypedModel intentionally avoid to manage
+    classes which explicitly declared to be proxy.
+    The class applied TypedModelRejoinMixin rejoins to the TypedModel's
+    registry, even if that class is directly specified to be a proxy
+    class.
+    """
     _provider = 's3compat'
+    # `xxx` part of the `type`value `xxx.yyy`. TypedModel uses
+    # `_meta.app_label` as this `xxx` part, but we need to fix
+    # `app_label` to `addons_s3compat` in order to keep the migration to
+    # this application.
+    db_owner = 'osf'
+
+    class Meta:
+        proxy = True
+        app_label = 'addons_s3compat'
 
 
 class S3CompatFolder(S3CompatFileNode, Folder):
-    pass
+    class Meta:
+        proxy = True
 
 
 class S3CompatFile(S3CompatFileNode, File):
     version_identifier = 'version'
+
+    class Meta:
+        proxy = True
 
 
 class UserSettings(BaseOAuthUserSettings):
